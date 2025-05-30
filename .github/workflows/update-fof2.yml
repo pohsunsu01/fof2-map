@@ -10,12 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository (full clone)
+      - name: Checkout repository with full history
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
-      - name: Create images folder
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+      - name: Create image directory
         run: mkdir -p images
 
       - name: Download foF2 image
@@ -24,10 +29,12 @@ jobs:
           file images/fof2.png
           ls -lh images/fof2.png
 
-      - name: Commit and force push if image changed
+      - name: Commit and force push
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
           git add images/fof2.png
-          git diff --cached --quiet || git commit -m "Auto update foF2 map"
-          git push --force
+          if ! git diff --cached --quiet; then
+            git commit -m "Auto update foF2 map"
+            git fetch origin main
+            git reset --soft origin/main
+            git push origin HEAD:main --force
+          fi
