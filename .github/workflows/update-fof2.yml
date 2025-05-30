@@ -2,7 +2,7 @@ name: Update foF2 Map
 
 on:
   schedule:
-    - cron: '0 * * * *'  # 每小時執行一次 UTC
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -12,10 +12,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Download foF2 image
+      - name: Create images folder
+        run: mkdir -p images
+
+      - name: Download foF2 image with validation
         run: |
-          mkdir -p images
-          curl -o images/fof2.png https://prop.kc2g.com/images/fof2.png
+          curl -sSL --retry 5 --connect-timeout 10 -o images/fof2.png https://prop.kc2g.com/images/fof2.png
+          file images/fof2.png
+          ls -lh images/fof2.png
 
       - name: Commit and push if image changed
         run: |
@@ -24,4 +28,3 @@ jobs:
           git add images/fof2.png
           git diff --cached --quiet || git commit -m "Auto update foF2 map"
           git push
-
