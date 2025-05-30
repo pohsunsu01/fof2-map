@@ -15,7 +15,7 @@ jobs:
       - name: Create images folder
         run: mkdir -p images
 
-      - name: Download foF2 image with validation
+      - name: Download foF2 image
         run: |
           curl -sSL --retry 5 --connect-timeout 10 -o images/fof2.png https://prop.kc2g.com/images/fof2.png
           file images/fof2.png
@@ -27,4 +27,5 @@ jobs:
           git config user.email "actions@github.com"
           git add images/fof2.png
           git diff --cached --quiet || git commit -m "Auto update foF2 map"
+          git pull --rebase
           git push
